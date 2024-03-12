@@ -15,9 +15,32 @@ datasource db {
 
 enum Role {
   CONTRACTOR
-  EMPLOYER
+  EMPLOYEE
 }
 
-model Contractor {
-  id String @id @default(cuid())
+model User {
+  id        String    @id @default(cuid())
+  username  String    @db.Text
+  email     String    @unique
+  phone     Int       @unique
+  role      Role      @default(EMPLOYEE)
+  projects  Project[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("users")
+}
+
+model Project {
+  id                 String   @id @default(cuid())
+  title              String
+  description        String   @db.Text
+  contractorProjects User?    @relation(fields: [contractorId], references: [id])
+  contractorId       String
+  image              String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([contractorId])
+  @@map("projects")
 }
