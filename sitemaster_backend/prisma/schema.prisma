@@ -19,14 +19,15 @@ enum Role {
 }
 
 model User {
-  id        String    @id @default(cuid())
-  username  String    @db.Text
-  email     String    @unique
-  phone     Int       @unique
-  role      Role      @default(EMPLOYEE)
-  projects  Project[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id             String    @id @default(cuid())
+  username       String    @db.Text
+  email          String    @unique
+  phone          Int       @unique
+  role           Role      @default(EMPLOYEE)
+  myContractorId String?
+  projects       Project[]
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   @@map("users")
 }
@@ -38,9 +39,22 @@ model Project {
   contractorProjects User?    @relation(fields: [contractorId], references: [id])
   contractorId       String
   image              String?
+  worker             Worker[]
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 
   @@index([contractorId])
   @@map("projects")
+}
+
+model Worker {
+  id        String   @id @default(cuid())
+  username  String
+  project   Project  @relation(fields: [projectId], references: [id])
+  projectId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([projectId])
+  @@map("workers")
 }
